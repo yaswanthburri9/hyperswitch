@@ -1906,9 +1906,9 @@ pub struct ProfileCreate {
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
 
-    /// Indicates if network tokenization before first payment is enabled or not
+    /// Indicates if pre network tokenization is enabled or not
     #[serde(default)]
-    pub is_tokenize_before_payment_enabled: bool,
+    pub is_pre_network_tokenization_enabled: bool,
 }
 
 #[nutype::nutype(
@@ -2028,9 +2028,9 @@ pub struct ProfileCreate {
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
 
-    /// Indicates if network tokenization before first payment is enabled or not
+    /// Indicates if pre network tokenization is enabled or not
     #[serde(default)]
-    pub is_tokenize_before_payment_enabled: bool,
+    pub is_pre_network_tokenization_enabled: bool,
 }
 
 #[cfg(feature = "v1")]
@@ -2169,8 +2169,8 @@ pub struct ProfileResponse {
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
 
-    /// Indicates if network tokenization before first payment is enabled or not
-    pub is_tokenize_before_payment_enabled: bool,
+    /// Indicates if pre network tokenization is enabled or not
+    pub is_pre_network_tokenization_enabled: bool,
 }
 
 #[cfg(feature = "v2")]
@@ -2296,8 +2296,8 @@ pub struct ProfileResponse {
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
 
-    /// Indicates if network tokenization before first payment is enabled or not
-    pub is_tokenize_before_payment_enabled: bool,
+    /// Indicates if pre network tokenization is enabled or not
+    pub is_pre_network_tokenization_enabled: bool,
 }
 
 #[cfg(feature = "v1")]
@@ -2430,9 +2430,9 @@ pub struct ProfileUpdate {
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
 
-    /// Indicates if network tokenization before first payment is enabled or not
+    /// Indicates if pre network tokenization is enabled or not
     #[schema(default = false, example = false)]
-    pub is_tokenize_before_payment_enabled: Option<bool>,
+    pub is_pre_network_tokenization_enabled: Option<bool>,
 }
 
 #[cfg(feature = "v2")]
@@ -2546,9 +2546,9 @@ pub struct ProfileUpdate {
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
 
-    /// Indicates if network tokenization before first payment is enabled or not
+    /// Indicates if pre network tokenization is enabled or not
     #[schema(default = false, example = false)]
-    pub is_tokenize_before_payment_enabled: Option<bool>,
+    pub is_pre_network_tokenization_enabled: Option<bool>,
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize, ToSchema)]

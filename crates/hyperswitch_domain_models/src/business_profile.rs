@@ -61,7 +61,7 @@ pub struct Profile {
     pub is_click_to_pay_enabled: bool,
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
-    pub is_tokenize_before_payment_enabled: bool,
+    pub is_pre_network_tokenization_enabled: bool,
 }
 
 #[cfg(feature = "v1")]
@@ -105,7 +105,7 @@ pub struct ProfileSetter {
     pub is_click_to_pay_enabled: bool,
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
-    pub is_tokenize_before_payment_enabled: bool,
+    pub is_pre_network_tokenization_enabled: bool,
 }
 
 #[cfg(feature = "v1")]
@@ -155,7 +155,7 @@ impl From<ProfileSetter> for Profile {
             max_auto_retries_enabled: value.max_auto_retries_enabled,
             is_click_to_pay_enabled: value.is_click_to_pay_enabled,
             authentication_product_ids: value.authentication_product_ids,
-            is_tokenize_before_payment_enabled: value.is_tokenize_before_payment_enabled,
+            is_pre_network_tokenization_enabled: value.is_pre_network_tokenization_enabled,
         }
     }
 }
@@ -208,7 +208,7 @@ pub struct ProfileGeneralUpdate {
     pub is_click_to_pay_enabled: Option<bool>,
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
-    pub is_tokenize_before_payment_enabled: Option<bool>,
+    pub is_pre_network_tokenization_enabled: Option<bool>,
 }
 
 #[cfg(feature = "v1")]
@@ -273,7 +273,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                     max_auto_retries_enabled,
                     is_click_to_pay_enabled,
                     authentication_product_ids,
-                    is_tokenize_before_payment_enabled,
+                    is_pre_network_tokenization_enabled,
                 } = *update;
 
                 Self {
@@ -313,7 +313,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                     max_auto_retries_enabled,
                     is_click_to_pay_enabled,
                     authentication_product_ids,
-                    is_tokenize_before_payment_enabled,
+                    is_pre_network_tokenization_enabled,
                 }
             }
             ProfileUpdate::RoutingAlgorithmUpdate {
@@ -355,7 +355,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 max_auto_retries_enabled: None,
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
             ProfileUpdate::DynamicRoutingAlgorithmUpdate {
                 dynamic_routing_algorithm,
@@ -395,7 +395,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 max_auto_retries_enabled: None,
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
             ProfileUpdate::ExtendedCardInfoUpdate {
                 is_extended_card_info_enabled,
@@ -435,7 +435,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 max_auto_retries_enabled: None,
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
             ProfileUpdate::ConnectorAgnosticMitUpdate {
                 is_connector_agnostic_mit_enabled,
@@ -475,7 +475,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 max_auto_retries_enabled: None,
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
             ProfileUpdate::NetworkTokenizationUpdate {
                 is_network_tokenization_enabled,
@@ -515,7 +515,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 max_auto_retries_enabled: None,
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
         }
     }
@@ -574,7 +574,7 @@ impl super::behaviour::Conversion for Profile {
             max_auto_retries_enabled: self.max_auto_retries_enabled,
             is_click_to_pay_enabled: self.is_click_to_pay_enabled,
             authentication_product_ids: self.authentication_product_ids,
-            is_tokenize_before_payment_enabled: self.is_tokenize_before_payment_enabled,
+            is_pre_network_tokenization_enabled: self.is_pre_network_tokenization_enabled,
         })
     }
 
@@ -645,7 +645,7 @@ impl super::behaviour::Conversion for Profile {
                 max_auto_retries_enabled: item.max_auto_retries_enabled,
                 is_click_to_pay_enabled: item.is_click_to_pay_enabled,
                 authentication_product_ids: item.authentication_product_ids,
-                is_tokenize_before_payment_enabled: item.is_network_tokenization_enabled,
+                is_pre_network_tokenization_enabled: item.is_network_tokenization_enabled,
             })
         }
         .await
@@ -700,7 +700,7 @@ impl super::behaviour::Conversion for Profile {
             max_auto_retries_enabled: self.max_auto_retries_enabled,
             is_click_to_pay_enabled: self.is_click_to_pay_enabled,
             authentication_product_ids: self.authentication_product_ids,
-            is_tokenize_before_payment_enabled: Some(self.is_tokenize_before_payment_enabled),
+            is_pre_network_tokenization_enabled: Some(self.is_pre_network_tokenization_enabled),
         })
     }
 }
@@ -749,7 +749,7 @@ pub struct Profile {
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
     pub three_ds_decision_manager_config: Option<common_types::payments::DecisionManagerRecord>,
-    pub is_tokenize_before_payment_enabled: bool,
+    pub is_pre_network_tokenization_enabled: bool,
 }
 
 #[cfg(feature = "v2")]
@@ -794,7 +794,7 @@ pub struct ProfileSetter {
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
     pub three_ds_decision_manager_config: Option<common_types::payments::DecisionManagerRecord>,
-    pub is_tokenize_before_payment_enabled: bool,
+    pub is_pre_network_tokenization_enabled: bool,
 }
 
 #[cfg(feature = "v2")]
@@ -845,7 +845,7 @@ impl From<ProfileSetter> for Profile {
             is_click_to_pay_enabled: value.is_click_to_pay_enabled,
             authentication_product_ids: value.authentication_product_ids,
             three_ds_decision_manager_config: value.three_ds_decision_manager_config,
-            is_tokenize_before_payment_enabled: value.is_tokenize_before_payment_enabled,
+            is_pre_network_tokenization_enabled: value.is_pre_network_tokenization_enabled,
         }
     }
 }
@@ -900,6 +900,7 @@ pub struct ProfileGeneralUpdate {
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
     pub three_ds_decision_manager_config: Option<common_types::payments::DecisionManagerRecord>,
+    pub is_pre_network_tokenization_enabled: Option<bool>,
 }
 
 #[cfg(feature = "v2")]
@@ -964,6 +965,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                     is_click_to_pay_enabled,
                     authentication_product_ids,
                     three_ds_decision_manager_config,
+                    is_pre_network_tokenization_enabled,
                 } = *update;
                 Self {
                     profile_name,
@@ -1005,7 +1007,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                     is_click_to_pay_enabled: None,
                     authentication_product_ids,
                     three_ds_decision_manager_config,
-                    is_tokenize_before_payment_enabled: None,
+                    is_pre_network_tokenization_enabled,
                 }
             }
             ProfileUpdate::RoutingAlgorithmUpdate {
@@ -1050,7 +1052,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
                 three_ds_decision_manager_config: None,
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
             ProfileUpdate::ExtendedCardInfoUpdate {
                 is_extended_card_info_enabled,
@@ -1093,7 +1095,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
                 three_ds_decision_manager_config: None,
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
             ProfileUpdate::ConnectorAgnosticMitUpdate {
                 is_connector_agnostic_mit_enabled,
@@ -1136,7 +1138,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
                 three_ds_decision_manager_config: None,
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
             ProfileUpdate::DefaultRoutingFallbackUpdate {
                 default_fallback_routing,
@@ -1179,7 +1181,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
                 three_ds_decision_manager_config: None,
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
             ProfileUpdate::NetworkTokenizationUpdate {
                 is_network_tokenization_enabled,
@@ -1222,7 +1224,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
                 three_ds_decision_manager_config: None,
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
             ProfileUpdate::CollectCvvDuringPaymentUpdate {
                 should_collect_cvv_during_payment,
@@ -1265,7 +1267,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
                 three_ds_decision_manager_config: None,
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
             ProfileUpdate::DecisionManagerRecordUpdate {
                 three_ds_decision_manager_config,
@@ -1308,7 +1310,7 @@ impl From<ProfileUpdate> for ProfileUpdateInternal {
                 is_click_to_pay_enabled: None,
                 authentication_product_ids: None,
                 three_ds_decision_manager_config: Some(three_ds_decision_manager_config),
-                is_tokenize_before_payment_enabled: None,
+                is_pre_network_tokenization_enabled: None,
             },
         }
     }
@@ -1371,7 +1373,7 @@ impl super::behaviour::Conversion for Profile {
             is_click_to_pay_enabled: self.is_click_to_pay_enabled,
             authentication_product_ids: self.authentication_product_ids,
             three_ds_decision_manager_config: self.three_ds_decision_manager_config,
-            is_tokenize_before_payment_enabled: self.is_tokenize_before_payment_enabled,
+            is_pre_network_tokenization_enabled: self.is_pre_network_tokenization_enabled,
         })
     }
 
@@ -1443,7 +1445,7 @@ impl super::behaviour::Conversion for Profile {
                 is_click_to_pay_enabled: item.is_click_to_pay_enabled,
                 authentication_product_ids: item.authentication_product_ids,
                 three_ds_decision_manager_config: item.three_ds_decision_manager_config,
-                is_tokenize_before_payment_enabled: item.is_tokenize_before_payment_enabled,
+                is_pre_network_tokenization_enabled: item.is_pre_network_tokenization_enabled,
             })
         }
         .await
@@ -1502,7 +1504,7 @@ impl super::behaviour::Conversion for Profile {
             is_click_to_pay_enabled: self.is_click_to_pay_enabled,
             authentication_product_ids: self.authentication_product_ids,
             three_ds_decision_manager_config: self.three_ds_decision_manager_config,
-            is_tokenize_before_payment_enabled: self.is_tokenize_before_payment_enabled,
+            is_pre_network_tokenization_enabled: Some(self.is_pre_network_tokenization_enabled),
         })
     }
 }
