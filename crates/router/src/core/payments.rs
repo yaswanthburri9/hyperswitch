@@ -5663,15 +5663,19 @@ where
                 }
                 Some(ActionType::CardWithNetworkTransactionId(data)) => {
                     logger::info!("using network_transaction_id for MIT flow");
-                    
-                    let mandate_reference_id = Some(payments_api::MandateReferenceId::NetworkMandateId(
-                        data.network_transaction_id.to_string(),
-                    ));
+
+                    let mandate_reference_id =
+                        Some(payments_api::MandateReferenceId::NetworkMandateId(
+                            data.network_transaction_id.to_string(),
+                        ));
                     mandate_ref_id = mandate_reference_id;
                 }
                 Some(ActionType::ConnectorMandate(connector_mandate_details)) => {
                     logger::info!("using connector_mandate_id for MIT flow");
-                    if let Some(merchant_connector_id) = retryable_connectors.first().and_then(|connector_data| connector_data.merchant_connector_id.as_ref()) {
+                    if let Some(merchant_connector_id) = retryable_connectors
+                        .first()
+                        .and_then(|connector_data| connector_data.merchant_connector_id.as_ref())
+                    {
                         if let Some(mandate_reference_record) = connector_mandate_details.clone()
                                 .get_required_value("connector_mandate_details")
                                     .change_context(errors::ApiErrorResponse::IncorrectPaymentMethodConfiguration)
@@ -5713,9 +5717,9 @@ where
                                 }
                     }
                 }
-                None => ()
+                None => (),
             }
-            
+
             let chosen_connector_data = retryable_connectors
                 .first()
                 .ok_or(errors::ApiErrorResponse::IncorrectPaymentMethodConfiguration)
@@ -5973,19 +5977,19 @@ pub async fn decide_action_type(
     connector: api::ConnectorData,
 ) -> Option<ActionType> {
     let merchant_connector_id = connector.merchant_connector_id.as_ref();
-    
+
     //fetch connectors that support ntid flow
     let ntid_supported_connectors = &state
         .conf
         .network_transaction_id_supported_connectors
         .connector_list;
-    
+
     //fetch connectors that support network tokenization flow
     let network_tokenization_supported_connectors = &state
         .conf
         .network_tokenization_supported_connectors
         .connector_list;
-    
+
     let is_network_token_with_ntid_flow = is_network_token_with_network_transaction_id_flow(
         is_connector_agnostic_mit_enabled,
         is_network_tokenization_enabled,
@@ -6025,7 +6029,9 @@ pub async fn decide_action_type(
         is_mandate_flow,
     ) {
         (IsNtWithNtiFlow::NtWithNtiSupported(network_transaction_id), _, _) => {
-            if ntid_supported_connectors.contains(&connector.connector_name) && network_tokenization_supported_connectors.contains(&connector.connector_name) {
+            if ntid_supported_connectors.contains(&connector.connector_name)
+                && network_tokenization_supported_connectors.contains(&connector.connector_name)
+            {
                 if let Ok((token_exp_month, token_exp_year)) =
                     network_tokenization::do_status_check_for_network_token(
                         state,
@@ -6058,7 +6064,9 @@ pub async fn decide_action_type(
         }
         (_, _, true) => {
             if let Ok(connector_mandate_details) = connector_mandate_details {
-                Some(ActionType::ConnectorMandate(connector_mandate_details.to_owned()))
+                Some(ActionType::ConnectorMandate(
+                    connector_mandate_details.to_owned(),
+                ))
             } else {
                 None
             }
