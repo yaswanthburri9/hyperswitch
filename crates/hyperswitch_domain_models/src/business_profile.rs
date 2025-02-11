@@ -700,7 +700,7 @@ impl super::behaviour::Conversion for Profile {
             max_auto_retries_enabled: self.max_auto_retries_enabled,
             is_click_to_pay_enabled: self.is_click_to_pay_enabled,
             authentication_product_ids: self.authentication_product_ids,
-            is_pre_network_tokenization_enabled: Some(self.is_pre_network_tokenization_enabled),
+            is_pre_network_tokenization_enabled: self.is_pre_network_tokenization_enabled,
         })
     }
 }
@@ -1504,7 +1504,7 @@ impl super::behaviour::Conversion for Profile {
             is_click_to_pay_enabled: self.is_click_to_pay_enabled,
             authentication_product_ids: self.authentication_product_ids,
             three_ds_decision_manager_config: self.three_ds_decision_manager_config,
-            is_pre_network_tokenization_enabled: Some(self.is_pre_network_tokenization_enabled),
+            is_pre_network_tokenization_enabled: self.is_pre_network_tokenization_enabled,
         })
     }
 }

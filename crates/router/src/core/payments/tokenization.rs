@@ -17,8 +17,11 @@ use common_utils::{
     pii,
 };
 use error_stack::{report, ResultExt};
-use hyperswitch_domain_models::mandates::{
-    CommonMandateReference, PaymentsMandateReference, PaymentsMandateReferenceRecord,
+use hyperswitch_domain_models::{
+    mandates::{
+        CommonMandateReference, PaymentsMandateReference, PaymentsMandateReferenceRecord,
+    },
+    payment_method_data::Card,
 };
 use masking::{ExposeInterface, Secret};
 use router_env::{instrument, tracing};
@@ -226,17 +229,7 @@ where
                             });
                         match payment_method_data_action {
                             payments::PaymentMethodDataAction::SaveCardData(card) => {
-                                let card_data = api::CardDetail {
-                                    card_number: card.card_data.card_number.clone(),
-                                    card_exp_month: card.card_data.card_exp_month.clone(),
-                                    card_exp_year: card.card_data.card_exp_year.clone(),
-                                    card_holder_name: None,
-                                    nick_name: None,
-                                    card_issuing_country: None,
-                                    card_network: card.card_data.card_network.clone(),
-                                    card_issuer: None,
-                                    card_type: None,
-                                };
+                                let card_data = api::CardDetail::from(card.card_data.clone());
                                 if let (Some(nt_ref_id), Some(tokenization_service)) = (
                                     card.network_token_req_ref_id.clone(),
                                     &state.conf.network_tokenization_service,
@@ -271,56 +264,16 @@ where
                             payments::PaymentMethodDataAction::SaveCardAndNetworkTokenData(
                                 save_card_and_network_token_data,
                             ) => {
-                                let card_data = api::CardDetail {
-                                    card_number: save_card_and_network_token_data
-                                        .card_data
-                                        .card_number
-                                        .clone(),
-                                    card_exp_month: save_card_and_network_token_data
-                                        .card_data
-                                        .card_exp_month
-                                        .clone(),
-                                    card_exp_year: save_card_and_network_token_data
-                                        .card_data
-                                        .card_exp_year
-                                        .clone(),
-                                    card_holder_name: None,
-                                    nick_name: None,
-                                    card_issuing_country: None,
-                                    card_network: save_card_and_network_token_data
-                                        .card_data
-                                        .card_network
-                                        .clone(),
-                                    card_issuer: None,
-                                    card_type: None,
-                                };
-                                let network_token_data = api::CardDetail {
-                                    card_number: save_card_and_network_token_data
+                                let card_data = api::CardDetail::from(
+                                    save_card_and_network_token_data.card_data.clone(),
+                                );
+
+                                let network_token_data = api::CardDetail::from(
+                                    save_card_and_network_token_data
                                         .network_token
                                         .network_token_data
-                                        .token_number
                                         .clone(),
-                                    card_exp_month: save_card_and_network_token_data
-                                        .network_token
-                                        .network_token_data
-                                        .token_exp_month
-                                        .clone(),
-                                    card_exp_year: save_card_and_network_token_data
-                                        .network_token
-                                        .network_token_data
-                                        .token_exp_year
-                                        .clone(),
-                                    card_holder_name: None,
-                                    nick_name: None,
-                                    card_issuing_country: None,
-                                    card_network: save_card_and_network_token_data
-                                        .network_token
-                                        .network_token_data
-                                        .card_network
-                                        .clone(),
-                                    card_issuer: None,
-                                    card_type: None,
-                                };
+                                );
 
                                 if payment_method_status
                                     == common_enums::PaymentMethodStatus::Active
@@ -997,37 +950,36 @@ where
 pub async fn pre_payment_tokenization(
     state: &SessionState,
     customer_id: Option<id_type::CustomerId>,
-    payment_method_data: Option<&domain::PaymentMethodData>,
+    card: &Card,
 ) -> RouterResult<(Option<network_tokenization::TokenResponse>, Option<String>)> {
     let customer_id = customer_id.to_owned().get_required_value("customer_id")?;
-    match payment_method_data {
-        Some(domain::PaymentMethodData::Card(card)) => {
-            let network_tokenization_supported_card_networks = &state
-                .conf
-                .network_tokenization_supported_card_networks
-                .card_networks;
 
-            if card
-                .card_network
-                .as_ref()
-                .filter(|cn| network_tokenization_supported_card_networks.contains(cn))
-                .is_some()
-            {
-                match network_tokenization::make_card_network_tokenization_request(
-                    state,
-                    card,
-                    &customer_id,
-                )
-                .await
-                {
-                    Ok((_token_response, network_token_requestor_ref_id)) => {
-                        let network_tokenization_service = &state.conf.network_tokenization_service;
-                        match (
-                            network_token_requestor_ref_id.clone(),
-                            network_tokenization_service,
-                        ) {
-                            (Some(token_ref), Some(network_tokenization_service)) => {
-                                let network_token = record_operation_time(
+    let network_tokenization_supported_card_networks = &state
+        .conf
+        .network_tokenization_supported_card_networks
+        .card_networks;
+
+    if card
+        .card_network
+        .as_ref()
+        .filter(|cn| network_tokenization_supported_card_networks.contains(cn))
+        .is_some()
+    {
+        match network_tokenization::make_card_network_tokenization_request(
+            state,
+            card,
+            &customer_id,
+        )
+        .await
+        {
+            Ok((_token_response, network_token_requestor_ref_id)) => {
+                let network_tokenization_service = &state.conf.network_tokenization_service;
+                match (
+                    network_token_requestor_ref_id.clone(),
+                    network_tokenization_service,
+                ) {
+                    (Some(token_ref), Some(network_tokenization_service)) => {
+                        let network_token = record_operation_time(
                                 async {
                                     network_tokenization::get_network_token(
                                         state,
@@ -1046,28 +998,24 @@ pub async fn pre_payment_tokenization(
                                 &[],
                                 )
                                 .await;
-                                match network_token {
-                                    Ok(token_response) => Ok((
-                                        Some(token_response),
-                                        network_token_requestor_ref_id.clone(),
-                                    )),
-                                    _ => Ok((None, network_token_requestor_ref_id.clone())),
-                                }
+                        match network_token {
+                            Ok(token_response) => {
+                                Ok((Some(token_response), network_token_requestor_ref_id.clone()))
                             }
-                            (Some(token_ref), _) => Ok((None, Some(token_ref))),
-                            _ => Ok((None, None)),
+                            _ => Ok((None, network_token_requestor_ref_id.clone())),
                         }
                     }
-                    Err(err) => {
-                        logger::error!("Failed to tokenize card: {:?}", err);
-                        Ok((None, None)) //None will be returned in case of error when calling network tokenization service
-                    }
+                    (Some(token_ref), _) => Ok((None, Some(token_ref))),
+                    _ => Ok((None, None)),
                 }
-            } else {
-                Ok((None, None)) //None will be returned in case of unsupported card network.
+            }
+            Err(err) => {
+                logger::error!("Failed to tokenize card: {:?}", err);
+                Ok((None, None)) //None will be returned in case of error when calling network tokenization service
             }
         }
-        _ => Ok((None, None)), //network_token_resp is None in case of other payment methods
+    } else {
+        Ok((None, None)) //None will be returned in case of unsupported card network.
     }
 }
 
@@ -1262,7 +1210,7 @@ pub async fn save_network_token_in_locker(
 pub async fn save_network_token_in_locker(
     state: &SessionState,
     merchant_account: &domain::MerchantAccount,
-    card_data: &domain::Card,
+    card_data: &Card,
     network_token_data: Option<api::CardDetail>,
     payment_method_request: api::PaymentMethodCreate,
 ) -> RouterResult<(

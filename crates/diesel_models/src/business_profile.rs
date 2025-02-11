@@ -107,7 +107,7 @@ pub struct ProfileNew {
     pub is_click_to_pay_enabled: bool,
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
-    pub is_pre_network_tokenization_enabled: Option<bool>,
+    pub is_pre_network_tokenization_enabled: bool,
 }
 
 #[cfg(feature = "v1")]
@@ -380,7 +380,7 @@ pub struct ProfileNew {
     pub authentication_product_ids:
         Option<common_types::payments::AuthenticationConnectorAccountMap>,
     pub three_ds_decision_manager_config: Option<common_types::payments::DecisionManagerRecord>,
-    pub is_pre_network_tokenization_enabled: Option<bool>,
+    pub is_pre_network_tokenization_enabled: bool,
 }
 
 #[cfg(feature = "v2")]
@@ -544,7 +544,7 @@ impl ProfileUpdateInternal {
             three_ds_decision_manager_config: three_ds_decision_manager_config
                 .or(source.three_ds_decision_manager_config),
             is_pre_network_tokenization_enabled: is_pre_network_tokenization_enabled
-                .unwrap_or(source.is_pre_network_tokenization_enabled)
+                .unwrap_or(source.is_pre_network_tokenization_enabled),
         }
     }
 }

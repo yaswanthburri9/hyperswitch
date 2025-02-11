@@ -5490,40 +5490,20 @@ pub fn is_pre_network_tokenization_enabled(
 }
 
 #[cfg(feature = "v1")]
-impl From<network_tokenization::TokenResponse> for domain::NetworkTokenData {
-    fn from(token_response: network_tokenization::TokenResponse) -> Self {
-        Self {
-            token_number: token_response.authentication_details.token,
-            token_exp_month: token_response.token_details.exp_month,
-            token_exp_year: token_response.token_details.exp_year,
-            token_cryptogram: Some(token_response.authentication_details.cryptogram),
-            card_issuer: None,
-            card_network: Some(token_response.network),
-            card_type: None,
-            card_issuing_country: None,
-            bank_code: None,
-            nick_name: None,
-            eci: token_response.eci,
-        }
-    }
-}
-
-#[cfg(feature = "v1")]
 pub async fn set_payment_method_data_for_pre_network_tokenization<F, D>(
     state: &SessionState,
     payment_data: &mut D,
-)
-where
+) where
     F: Send + Clone,
     D: OperationSessionGetters<F> + OperationSessionSetters<F> + Send + Sync + Clone,
 {
     let customer_id = payment_data.get_payment_intent().customer_id.clone();
     let payment_method_data = payment_data.get_payment_method_data();
-    let pre_tokenization_response =
-        tokenization::pre_payment_tokenization(state, customer_id, payment_method_data)
-            .await
-            .ok();
     if let Some(domain::PaymentMethodData::Card(card_data)) = payment_method_data {
+        let pre_tokenization_response =
+            tokenization::pre_payment_tokenization(state, customer_id, card_data)
+                .await
+                .ok();
         match pre_tokenization_response {
             Some((Some(token_response), Some(token_ref))) => {
                 let token_data = domain::NetworkTokenData::from(token_response);
@@ -5537,9 +5517,9 @@ where
                     network_token: network_token_data_for_vault.clone(),
                 };
                 payment_data.set_vault_operation(
-                    PaymentMethodDataAction::SaveCardAndNetworkTokenData(
-                        Box::new(card_and_network_token_data.clone()),
-                    ),
+                    PaymentMethodDataAction::SaveCardAndNetworkTokenData(Box::new(
+                        card_and_network_token_data.clone(),
+                    )),
                 );
 
                 payment_data.set_payment_method_data(Some(
@@ -5551,18 +5531,18 @@ where
                     card_data: card_data.clone(),
                     network_token_req_ref_id: Some(token_ref),
                 };
-                payment_data.set_vault_operation(PaymentMethodDataAction::SaveCardData(
-                    Box::new(card_data_for_vault.clone()),
-                ))
+                payment_data.set_vault_operation(PaymentMethodDataAction::SaveCardData(Box::new(
+                    card_data_for_vault.clone(),
+                )))
             }
             _ => {
                 let card_data_for_vault = CardDataForVault {
                     card_data: card_data.clone(),
                     network_token_req_ref_id: None,
                 };
-                payment_data.set_vault_operation(PaymentMethodDataAction::SaveCardData(
-                    Box::new(card_data_for_vault.clone()),
-                ))
+                payment_data.set_vault_operation(PaymentMethodDataAction::SaveCardData(Box::new(
+                    card_data_for_vault.clone(),
+                )))
             }
         }
     }
