@@ -18,9 +18,7 @@ use common_utils::{
 };
 use error_stack::{report, ResultExt};
 use hyperswitch_domain_models::{
-    mandates::{
-        CommonMandateReference, PaymentsMandateReference, PaymentsMandateReferenceRecord,
-    },
+    mandates::{CommonMandateReference, PaymentsMandateReference, PaymentsMandateReferenceRecord},
     payment_method_data::Card,
 };
 use masking::{ExposeInterface, Secret};
