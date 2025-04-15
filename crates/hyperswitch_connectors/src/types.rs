@@ -2,19 +2,21 @@
 use hyperswitch_domain_models::types::{PayoutsData, PayoutsResponseData};
 use hyperswitch_domain_models::{
     router_data::{AccessToken, RouterData},
+    router_data_v2::{self,flow_common_types::BillingConnectorPaymentsSyncFlowData,RouterDataV2},
     router_flow_types::{
-        Accept, AccessTokenAuth, Authorize, Capture, Defend, Evidence, PSync, PreProcessing,
-        Session, Upload, Void,
+        Accept, AccessTokenAuth, Authorize, BillingConnectorPaymentsSync, Capture, Defend,
+        Evidence, PSync, PreProcessing, Session, Upload, Void
     },
     router_request_types::{
-        AcceptDisputeRequestData, AccessTokenRequestData, DefendDisputeRequestData,
-        PaymentsAuthorizeData, PaymentsCancelData, PaymentsCaptureData, PaymentsPreProcessingData,
-        PaymentsSessionData, PaymentsSyncData, RefundsData, SubmitEvidenceRequestData,
-        UploadFileRequestData,
+        revenue_recovery::BillingConnectorPaymentsSyncRequest, AcceptDisputeRequestData,
+        AccessTokenRequestData, DefendDisputeRequestData, PaymentsAuthorizeData,
+        PaymentsCancelData, PaymentsCaptureData, PaymentsPreProcessingData, PaymentsSessionData,
+        PaymentsSyncData, RefundsData, SubmitEvidenceRequestData, UploadFileRequestData,
     },
     router_response_types::{
-        AcceptDisputeResponse, DefendDisputeResponse, PaymentsResponseData, RefundsResponseData,
-        SubmitEvidenceResponse, UploadFileResponse,
+        revenue_recovery::BillingConnectorPaymentsSyncResponse, AcceptDisputeResponse,
+        DefendDisputeResponse, PaymentsResponseData, RefundsResponseData, SubmitEvidenceResponse,
+        UploadFileResponse,
     },
 };
 
@@ -48,6 +50,13 @@ pub(crate) type DefendDisputeRouterData =
 #[cfg(feature = "payouts")]
 pub type PayoutsResponseRouterData<F, R> =
     ResponseRouterData<F, R, PayoutsData, PayoutsResponseData>;
+
+pub(crate) type BillingConnectorPaymentsResponseSyncRouterDataV2 = RouterDataV2<
+    BillingConnectorPaymentsSync,
+    BillingConnectorPaymentsSyncFlowData,
+    BillingConnectorPaymentsSyncRequest,
+    BillingConnectorPaymentsSyncResponse,
+>;
 
 // TODO: Remove `ResponseRouterData` from router crate after all the related type aliases are moved to this crate.
 pub struct ResponseRouterData<Flow, R, Request, Response> {

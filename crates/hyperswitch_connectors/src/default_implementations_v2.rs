@@ -2676,15 +2676,15 @@ macro_rules! default_imp_for_new_connector_integration_revenue_recovery {
     ($($path:ident::$connector:ident),*) => {
         $(  impl RevenueRecoveryV2 for $path::$connector {}
             impl BillingConnectorPaymentsSyncIntegrationV2 for $path::$connector {}
-            impl RevenueRecoveryRecordBackV2 for $path::$connector {}
-            impl
-            ConnectorIntegrationV2<
-            RecoveryRecordBack,
-            RevenueRecoveryRecordBackData,
-            RevenueRecoveryRecordBackRequest,
-            RevenueRecoveryRecordBackResponse,
-            > for $path::$connector
-            {}
+            // impl RevenueRecoveryRecordBackV2 for $path::$connector {}
+            // impl
+            // ConnectorIntegrationV2<
+            // RecoveryRecordBack,
+            // RevenueRecoveryRecordBackData,
+            // RevenueRecoveryRecordBackRequest,
+            // RevenueRecoveryRecordBackResponse,
+            // > for $path::$connector
+            // {}
             impl
                 ConnectorIntegrationV2<
                 BillingConnectorPaymentsSync,

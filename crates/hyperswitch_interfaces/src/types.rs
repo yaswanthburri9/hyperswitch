@@ -236,9 +236,16 @@ pub type RevenueRecoveryRecordBackType = dyn ConnectorIntegration<
 >;
 
 /// Type alias for `ConnectorIntegration<BillingConnectorPaymentsSync, BillingConnectorPaymentsSyncRequest, BillingConnectorPaymentsSyncResponse>`
-pub type BillingConnectorPaymentsSyncType = dyn ConnectorIntegrationV2<
+pub type BillingConnectorPaymentsSyncTypeV2 = dyn ConnectorIntegrationV2<
     BillingConnectorPaymentsSync,
     hyperswitch_domain_models::router_data_v2::flow_common_types::BillingConnectorPaymentsSyncFlowData,
+    BillingConnectorPaymentsSyncRequest,
+    BillingConnectorPaymentsSyncResponse,
+>;
+
+/// Type alias for `ConnectorIntegration<BillingConnectorPaymentsSync, BillingConnectorPaymentsSyncRequest, BillingConnectorPaymentsSyncResponse>`
+pub type BillingConnectorPaymentsSyncType = dyn ConnectorIntegration<
+    BillingConnectorPaymentsSync,
     BillingConnectorPaymentsSyncRequest,
     BillingConnectorPaymentsSyncResponse,
 >;

@@ -1,4 +1,6 @@
 #[cfg(feature = "v2")]
+use common_utils::transformers::ForeignTryFrom;
+#[cfg(feature = "v2")]
 use std::str::FromStr;
 
 use common_enums::enums;
@@ -11,6 +13,7 @@ use hyperswitch_domain_models::revenue_recovery;
 use hyperswitch_domain_models::{
     payment_method_data::PaymentMethodData,
     router_data::{ConnectorAuthType, RouterData},
+    router_data_v2::{flow_common_types::BillingConnectorPaymentsSyncFlowData, RouterDataV2},
     router_flow_types::refunds::{Execute, RSync},
     router_request_types::ResponseId,
     router_response_types::{PaymentsResponseData, RefundsResponseData},
@@ -29,7 +32,10 @@ use serde::{Deserialize, Serialize};
 use time::PrimitiveDateTime;
 
 use crate::{
-    types::{RefundsResponseRouterData, ResponseRouterData},
+    types::{
+        BillingConnectorPaymentsResponseSyncRouterDataV2, RefundsResponseRouterData,
+        ResponseRouterData,
+    },
     utils::{convert_uppercase, PaymentsAuthorizeRequestData},
 };
 pub mod auth_headers {
@@ -405,63 +411,51 @@ pub enum StripebillingChargeStatus {
 const MCA_ID_IDENTIFIER_FOR_STRIPE_IN_STRIPEBILLING_MCA_FEAATURE_METADATA: &str = "stripebilling";
 
 #[cfg(all(feature = "v2", feature = "revenue_recovery"))]
-impl
-    TryFrom<
-        ResponseRouterData<
-            recovery_router_flows::BillingConnectorPaymentsSync,
-            StripebillingRecoveryDetailsData,
-            recovery_request_types::BillingConnectorPaymentsSyncRequest,
-            recovery_response_types::BillingConnectorPaymentsSyncResponse,
-        >,
-    > for recovery_router_data_types::BillingConnectorPaymentsSyncRouterDataV2
+impl ForeignTryFrom<(StripebillingRecoveryDetailsData, Self, u16)>
+    for RouterDataV2<
+        recovery_router_flows::BillingConnectorPaymentsSync,
+        BillingConnectorPaymentsSyncFlowData,
+        recovery_request_types::BillingConnectorPaymentsSyncRequest,
+        recovery_response_types::BillingConnectorPaymentsSyncResponse,
+    >
 {
     type Error = error_stack::Report<errors::ConnectorError>;
-    fn try_from(
-        item: ResponseRouterData<
-            recovery_router_flows::BillingConnectorPaymentsSync,
-            StripebillingRecoveryDetailsData,
-            recovery_request_types::BillingConnectorPaymentsSyncRequest,
-            recovery_response_types::BillingConnectorPaymentsSyncResponse,
-        >,
+    fn foreign_try_from(
+        (item, data, http_code): (StripebillingRecoveryDetailsData, Self, u16),
     ) -> Result<Self, Self::Error> {
-        let merchant_reference_id = id_type::PaymentReferenceId::from_str(
-            &item.response.invoice_id,
-        )
-        .change_context(errors::ConnectorError::MissingRequiredField {
-            field_name: "invoice_id",
-        })?;
+        let merchant_reference_id = id_type::PaymentReferenceId::from_str(&item.invoice_id)
+            .change_context(errors::ConnectorError::MissingRequiredField {
+                field_name: "invoice_id",
+            })?;
         let connector_transaction_id = Some(common_utils::types::ConnectorTransactionId::from(
-            item.response.charge_id,
+            item.charge_id,
         ));
 
         Ok(Self {
             response: Ok(
                 recovery_response_types::BillingConnectorPaymentsSyncResponse {
-                    status: item.response.status.into(),
-                    amount: item.response.amount,
-                    currency: item.response.currency,
+                    status: item.status.into(),
+                    amount: item.amount,
+                    currency: item.currency,
                     merchant_reference_id,
                     connector_account_reference_id:
                         MCA_ID_IDENTIFIER_FOR_STRIPE_IN_STRIPEBILLING_MCA_FEAATURE_METADATA
                             .to_string(),
                     connector_transaction_id,
-                    error_code: item.response.failure_code,
-                    error_message: item.response.failure_message,
-                    processor_payment_method_token: item.response.payment_method,
-                    connector_customer_id: item.response.customer,
-                    transaction_created_at: Some(item.response.created),
+                    error_code: item.failure_code,
+                    error_message: item.failure_message,
+                    processor_payment_method_token: item.payment_method,
+                    connector_customer_id: item.customer,
+                    transaction_created_at: Some(item.created),
                     payment_method_sub_type: common_enums::PaymentMethodType::from(
-                        item.response
-                            .payment_method_details
-                            .card_funding_type
-                            .funding,
+                        item.payment_method_details.card_funding_type.funding,
                     ),
                     payment_method_type: common_enums::PaymentMethod::from(
-                        item.response.payment_method_details.type_of_payment_method,
+                        item.payment_method_details.type_of_payment_method,
                     ),
                 },
             ),
-            ..item.data
+            ..data
         })
     }
 }

@@ -105,3 +105,9 @@ pub type BillingConnectorPaymentsSyncRouterDataV2 = router_data_v2::RouterDataV2
     BillingConnectorPaymentsSyncRequest,
     BillingConnectorPaymentsSyncResponse,
 >;
+
+pub type BillingConnectorPaymentsSyncRouterData = RouterData<
+    BillingConnectorPaymentsSync,
+    BillingConnectorPaymentsSyncRequest,
+    BillingConnectorPaymentsSyncResponse,
+>;
