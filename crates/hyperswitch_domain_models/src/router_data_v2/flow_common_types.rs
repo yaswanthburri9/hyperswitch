@@ -154,4 +154,6 @@ pub struct UasFlowData {
 }
 
 #[derive(Debug, Clone)]
-pub struct BillingConnectorPaymentsSyncFlowData;
+pub struct BillingConnectorPaymentsSyncFlowData {
+    pub base_url : String,
+}

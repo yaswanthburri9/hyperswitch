@@ -55,7 +55,7 @@ use hyperswitch_domain_models::{
     router_response_types::PayoutsResponseData,
 };
 
-use crate::api::ConnectorIntegration;
+use crate::{api::ConnectorIntegration, connector_integration_v2::ConnectorIntegrationV2};
 /// struct Response
 #[derive(Clone, Debug)]
 pub struct Response {
@@ -236,8 +236,9 @@ pub type RevenueRecoveryRecordBackType = dyn ConnectorIntegration<
 >;
 
 /// Type alias for `ConnectorIntegration<BillingConnectorPaymentsSync, BillingConnectorPaymentsSyncRequest, BillingConnectorPaymentsSyncResponse>`
-pub type BillingConnectorPaymentsSyncType = dyn ConnectorIntegration<
+pub type BillingConnectorPaymentsSyncType = dyn ConnectorIntegrationV2<
     BillingConnectorPaymentsSync,
+    hyperswitch_domain_models::router_data_v2::flow_common_types::BillingConnectorPaymentsSyncFlowData,
     BillingConnectorPaymentsSyncRequest,
     BillingConnectorPaymentsSyncResponse,
 >;

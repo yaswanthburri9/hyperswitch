@@ -413,7 +413,7 @@ impl
             recovery_request_types::BillingConnectorPaymentsSyncRequest,
             recovery_response_types::BillingConnectorPaymentsSyncResponse,
         >,
-    > for recovery_router_data_types::BillingConnectorPaymentsSyncRouterData
+    > for recovery_router_data_types::BillingConnectorPaymentsSyncRouterDataV2
 {
     type Error = error_stack::Report<errors::ConnectorError>;
     fn try_from(
