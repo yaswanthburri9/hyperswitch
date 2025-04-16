@@ -2,11 +2,11 @@ pub mod transformers;
 
 use std::collections::HashMap;
 
-use common_utils::transformers::ForeignTryFrom;
 use common_utils::{
     errors::CustomResult,
     ext_traits::BytesExt,
     request::{Method, Request, RequestBuilder, RequestContent},
+    transformers::ForeignTryFrom,
     types::{AmountConvertor, StringMinorUnit, StringMinorUnitForConnector},
 };
 use error_stack::{report, ResultExt};
@@ -14,8 +14,7 @@ use error_stack::{report, ResultExt};
 use hyperswitch_domain_models::revenue_recovery;
 use hyperswitch_domain_models::{
     router_data::{AccessToken, ConnectorAuthType, ErrorResponse, RouterData},
-    router_data_v2::flow_common_types::BillingConnectorPaymentsSyncFlowData,
-    router_data_v2::RouterDataV2,
+    router_data_v2::{flow_common_types::BillingConnectorPaymentsSyncFlowData, RouterDataV2},
     router_flow_types::{
         access_token_auth::AccessTokenAuth,
         payments::{Authorize, Capture, PSync, PaymentMethodToken, Session, SetupMandate, Void},
@@ -60,7 +59,9 @@ use transformers as stripebilling;
 
 use crate::{
     constants::headers,
-    types::{BillingConnectorPaymentsResponseSyncRouterDataV2, ResponseRouterData},
+    types::{
+        BillingConnectorPaymentsResponseSyncRouterDataV2, ResponseRouterData, ResponseRouterDataV2,
+    },
     utils,
 };
 
@@ -828,21 +829,11 @@ impl
 
     fn handle_response_v2(
         &self,
-        data: &RouterDataV2<
-            recovery_router_flows::BillingConnectorPaymentsSync,
-            BillingConnectorPaymentsSyncFlowData,
-            recovery_request_types::BillingConnectorPaymentsSyncRequest,
-            recovery_response_types::BillingConnectorPaymentsSyncResponse,
-        >,
+        data: &recovery_router_data_types::BillingConnectorPaymentsSyncRouterDataV2,
         event_builder: Option<&mut ConnectorEvent>,
         res: Response,
     ) -> CustomResult<
-        RouterDataV2<
-            recovery_router_flows::BillingConnectorPaymentsSync,
-            BillingConnectorPaymentsSyncFlowData,
-            recovery_request_types::BillingConnectorPaymentsSyncRequest,
-            recovery_response_types::BillingConnectorPaymentsSyncResponse,
-        >,
+        recovery_router_data_types::BillingConnectorPaymentsSyncRouterDataV2,
         errors::ConnectorError,
     > {
         let response: stripebilling::StripebillingRecoveryDetailsData = res
@@ -855,7 +846,13 @@ impl
         event_builder.map(|i| i.set_response_body(&response));
         router_env::logger::info!(connector_response=?response);
 
-        RouterDataV2::foreign_try_from((response, data.clone(), res.status_code))
+        recovery_router_data_types::BillingConnectorPaymentsSyncRouterDataV2::try_from(
+            ResponseRouterDataV2 {
+                response,
+                data: data.clone(),
+                http_code: res.status_code,
+            },
+        )
     }
 
     fn get_error_response_v2(

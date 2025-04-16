@@ -812,7 +812,7 @@ impl<T, Req: Clone, Resp: Clone> RouterDataConversion<T, Req, Resp>
         Self: Sized,
     {
         let resource_common_data = Self {
-            base_url : "https://api.stripe.com/".to_string()
+            base_url: "https://api.stripe.com/".to_string(),
         };
         Ok(RouterDataV2 {
             flow: std::marker::PhantomData,

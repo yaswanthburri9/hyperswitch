@@ -1,14 +1,17 @@
 pub use diesel_models::types::OrderDetailsWithAmount;
 
 use crate::{
-    router_data::{AccessToken, RouterData}, router_data_v2, router_flow_types::{
+    router_data::{AccessToken, RouterData},
+    router_data_v2,
+    router_flow_types::{
         mandate_revoke::MandateRevoke, revenue_recovery::RecoveryRecordBack, AccessTokenAuth,
         Authenticate, AuthenticationConfirmation, Authorize, AuthorizeSessionToken,
         BillingConnectorPaymentsSync, CalculateTax, Capture, CompleteAuthorize,
         CreateConnectorCustomer, Execute, IncrementalAuthorization, PSync, PaymentMethodToken,
         PostAuthenticate, PostSessionTokens, PreAuthenticate, PreProcessing, RSync,
         SdkSessionUpdate, Session, SetupMandate, VerifyWebhookSource, Void,
-    }, router_request_types::{
+    },
+    router_request_types::{
         revenue_recovery::{BillingConnectorPaymentsSyncRequest, RevenueRecoveryRecordBackRequest},
         unified_authentication_service::{
             UasAuthenticationRequestData, UasAuthenticationResponseData,
@@ -22,13 +25,14 @@ use crate::{
         PaymentsPreProcessingData, PaymentsSessionData, PaymentsSyncData,
         PaymentsTaxCalculationData, RefundsData, SdkPaymentsSessionUpdateData,
         SetupMandateRequestData, VerifyWebhookSourceRequestData,
-    }, router_response_types::{
+    },
+    router_response_types::{
         revenue_recovery::{
             BillingConnectorPaymentsSyncResponse, RevenueRecoveryRecordBackResponse,
         },
         MandateRevokeResponseData, PaymentsResponseData, RefundsResponseData,
         TaxCalculationResponseData, VerifyWebhookSourceResponseData,
-    }
+    },
 };
 #[cfg(feature = "payouts")]
 pub use crate::{router_request_types::PayoutsData, router_response_types::PayoutsResponseData};

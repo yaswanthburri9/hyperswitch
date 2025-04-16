@@ -735,7 +735,7 @@ pub struct BillingConnectorPaymentsSyncResponseData(
     revenue_recovery_response::BillingConnectorPaymentsSyncResponse,
 );
 pub struct BillingConnectorPaymentsSyncFlowRouterData(
-    router_types::BillingConnectorPaymentsSyncRouterDataV2,
+    router_types::BillingConnectorPaymentsSyncRouterData,
 );
 
 impl BillingConnectorPaymentsSyncResponseData {
@@ -855,13 +855,11 @@ impl BillingConnectorPaymentsSyncFlowRouterData {
         .parse_value("ConnectorAuthType")
         .change_context(errors::RevenueRecoveryError::BillingConnectorPaymentsSyncFailed)?;
 
-        
-
         let router_data = types::RouterDataV2 {
             flow: PhantomData::<router_flow_types::BillingConnectorPaymentsSync>,
             tenant_id: state.tenant.tenant_id.clone(),
-            resource_common_data: flow_common_types::BillingConnectorPaymentsSyncFlowData{
-                base_url: &state.conf.connectors.stripebilling.base_url.as_ref()
+            resource_common_data: flow_common_types::BillingConnectorPaymentsSyncFlowData {
+                base_url: state.conf.connectors.stripebilling.base_url.to_string(),
             },
             connector_auth_type: auth_type,
             request: revenue_recovery_request::BillingConnectorPaymentsSyncRequest {
@@ -870,20 +868,20 @@ impl BillingConnectorPaymentsSyncFlowRouterData {
             response: Err(types::ErrorResponse::default()),
         };
 
-        // let old_router_data =
-        //     flow_common_types::BillingConnectorPaymentsSyncFlowData::to_old_router_data(
-        //         router_data,
-        //     )
-        //     .change_context(errors::RevenueRecoveryError::BillingConnectorPaymentsSyncFailed)
-        //     .attach_printable(
-        //         "Cannot construct router data for making the billing connector payments api call",
-        //     )?;
+        let old_router_data =
+            flow_common_types::BillingConnectorPaymentsSyncFlowData::to_old_router_data(
+                router_data,
+            )
+            .change_context(errors::RevenueRecoveryError::BillingConnectorPaymentsSyncFailed)
+            .attach_printable(
+                "Cannot construct router data for making the billing connector payments api call",
+            )?;
 
-        // Ok(Self(old_router_data))
-        Ok(Self(router_data))
+        Ok(Self(old_router_data))
+        // Ok(Self(router_data))
     }
 
-    fn inner(self) -> router_types::BillingConnectorPaymentsSyncRouterDataV2 {
+    fn inner(self) -> router_types::BillingConnectorPaymentsSyncRouterData {
         self.0
     }
 }

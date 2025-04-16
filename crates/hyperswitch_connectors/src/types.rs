@@ -2,10 +2,10 @@
 use hyperswitch_domain_models::types::{PayoutsData, PayoutsResponseData};
 use hyperswitch_domain_models::{
     router_data::{AccessToken, RouterData},
-    router_data_v2::{self,flow_common_types::BillingConnectorPaymentsSyncFlowData,RouterDataV2},
+    router_data_v2::{self, flow_common_types::BillingConnectorPaymentsSyncFlowData, RouterDataV2},
     router_flow_types::{
         Accept, AccessTokenAuth, Authorize, BillingConnectorPaymentsSync, Capture, Defend,
-        Evidence, PSync, PreProcessing, Session, Upload, Void
+        Evidence, PSync, PreProcessing, Session, Upload, Void,
     },
     router_request_types::{
         revenue_recovery::BillingConnectorPaymentsSyncRequest, AcceptDisputeRequestData,
@@ -62,5 +62,11 @@ pub(crate) type BillingConnectorPaymentsResponseSyncRouterDataV2 = RouterDataV2<
 pub struct ResponseRouterData<Flow, R, Request, Response> {
     pub response: R,
     pub data: RouterData<Flow, Request, Response>,
+    pub http_code: u16,
+}
+
+pub struct ResponseRouterDataV2<Flow, R, ResourceCommonData, Request, Response> {
+    pub response: R,
+    pub data: RouterDataV2<Flow, ResourceCommonData, Request, Response>,
     pub http_code: u16,
 }
