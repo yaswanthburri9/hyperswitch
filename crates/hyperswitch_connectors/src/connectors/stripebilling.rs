@@ -2,11 +2,11 @@ pub mod transformers;
 
 use std::collections::HashMap;
 
+use common_utils::transformers::ForeignTryFrom;
 use common_utils::{
     errors::CustomResult,
     ext_traits::BytesExt,
     request::{Method, Request, RequestBuilder, RequestContent},
-    transformers::ForeignTryFrom,
     types::{AmountConvertor, StringMinorUnit, StringMinorUnitForConnector},
 };
 use error_stack::{report, ResultExt};
@@ -14,16 +14,17 @@ use error_stack::{report, ResultExt};
 use hyperswitch_domain_models::revenue_recovery;
 use hyperswitch_domain_models::{
     router_data::{AccessToken, ConnectorAuthType, ErrorResponse, RouterData},
-    router_data_v2::{flow_common_types::BillingConnectorPaymentsSyncFlowData, RouterDataV2},
+    router_data_v2::flow_common_types::{BillingConnectorPaymentsSyncFlowData,UasFlowData},
+    router_data_v2::RouterDataV2,
     router_flow_types::{
         access_token_auth::AccessTokenAuth,
         payments::{Authorize, Capture, PSync, PaymentMethodToken, Session, SetupMandate, Void},
-        refunds::{Execute, RSync},
+        refunds::{Execute, RSync},unified_authentication_service::{PreAuthenticate,PostAuthenticate,AuthenticationConfirmation,Authenticate}
     },
     router_request_types::{
         AccessTokenRequestData, PaymentMethodTokenizationData, PaymentsAuthorizeData,
         PaymentsCancelData, PaymentsCaptureData, PaymentsSessionData, PaymentsSyncData,
-        RefundsData, SetupMandateRequestData,
+        RefundsData, SetupMandateRequestData,unified_authentication_service::{UasAuthenticationRequestData,UasConfirmationRequestData,UasPostAuthenticationRequestData,UasPreAuthenticationRequestData,UasAuthenticationResponseData}
     },
     router_response_types::{PaymentsResponseData, RefundsResponseData},
     types::{
@@ -94,6 +95,14 @@ impl Stripebilling {
 // impl api::revenue_recovery::RevenueRecoveryRecordBack for Stripebilling {}
 // #[cfg(all(feature = "v2", feature = "revenue_recovery"))]
 // impl api::revenue_recovery::BillingConnectorPaymentsSyncIntegration for Stripebilling {}
+
+impl api::PayoutsV2 for Stripebilling {}
+impl api::UnifiedAuthenticationServiceV2 for Stripebilling{}
+impl api::UasPreAuthenticationV2 for Stripebilling{}
+impl  api::UasPostAuthenticationV2 for Stripebilling{}
+impl  api::UasAuthenticationV2 for Stripebilling{}
+impl  api::UasAuthenticationConfirmationV2 for Stripebilling{}
+
 #[cfg(all(feature = "v2", feature = "revenue_recovery"))]
 impl api::revenue_recovery_v2::RevenueRecoveryV2 for Stripebilling {}
 #[cfg(all(feature = "v2", feature = "revenue_recovery"))]
@@ -123,6 +132,7 @@ impl ConnectorIntegration<PaymentMethodToken, PaymentMethodTokenizationData, Pay
 //         Ok(header)
 //     }
 // }
+
 
 impl ConnectorCommon for Stripebilling {
     fn id(&self) -> &'static str {
@@ -186,6 +196,34 @@ impl ConnectorCommon for Stripebilling {
     }
 }
 
+
+impl ConnectorIntegrationV2<
+PreAuthenticate,
+UasFlowData,
+UasPreAuthenticationRequestData,
+UasAuthenticationResponseData,
+> for Stripebilling {
+    //TODO: implement sessions flow
+}
+
+impl ConnectorIntegrationV2<PostAuthenticate,
+UasFlowData,
+UasPostAuthenticationRequestData,
+UasAuthenticationResponseData,> for Stripebilling {
+    //TODO: implement sessions flow
+}
+impl ConnectorIntegrationV2<AuthenticationConfirmation,
+UasFlowData,
+UasConfirmationRequestData,
+UasAuthenticationResponseData,> for Stripebilling {
+    //TODO: implement sessions flow
+}
+impl ConnectorIntegrationV2<Authenticate,
+UasFlowData,
+UasAuthenticationRequestData,
+UasAuthenticationResponseData,> for Stripebilling {
+    //TODO: implement sessions flow
+}
 impl ConnectorValidation for Stripebilling {
     //TODO: implement functions when support enabled
 }

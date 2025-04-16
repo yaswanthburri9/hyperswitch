@@ -325,50 +325,50 @@ impl Action {
         payment_intent: &PaymentIntent,
         billing_mca: &merchant_connector_account::MerchantConnectorAccount,
     ) -> RecoveryResult<()> {
-        let connector_name = billing_mca.connector_name.to_string();
-        let connector_data = api_types::ConnectorData::get_connector_by_name(
-            &state.conf.connectors,
-            &connector_name,
-            api_types::GetToken::Connector,
-            Some(billing_mca.get_id()),
-        )
-        .change_context(errors::RecoveryError::RecordBackToBillingConnectorFailed)
-        .attach_printable(
-            "invalid connector name received in billing merchant connector account",
-        )?;
+        // let connector_name = billing_mca.connector_name.to_string();
+        // let connector_data = api_types::ConnectorData::get_connector_by_name(
+        //     &state.conf.connectors,
+        //     &connector_name,
+        //     api_types::GetToken::Connector,
+        //     Some(billing_mca.get_id()),
+        // )
+        // .change_context(errors::RecoveryError::RecordBackToBillingConnectorFailed)
+        // .attach_printable(
+        //     "invalid connector name received in billing merchant connector account",
+        // )?;
 
-        let connector_integration: services::BoxedRevenueRecoveryRecordBackInterface<
-            router_flow_types::RecoveryRecordBack,
-            revenue_recovery_request::RevenueRecoveryRecordBackRequest,
-            revenue_recovery_response::RevenueRecoveryRecordBackResponse,
-        > = connector_data.connector.get_connector_integration();
+        // let connector_integration: services::BoxedRevenueRecoveryRecordBackInterface<
+        //     router_flow_types::RecoveryRecordBack,
+        //     revenue_recovery_request::RevenueRecoveryRecordBackRequest,
+        //     revenue_recovery_response::RevenueRecoveryRecordBackResponse,
+        // > = connector_data.connector.get_connector_integration();
 
-        let router_data = self.construct_recovery_record_back_router_data(
-            state,
-            billing_mca,
-            payment_attempt,
-            payment_intent,
-        )?;
+        // let router_data = self.construct_recovery_record_back_router_data(
+        //     state,
+        //     billing_mca,
+        //     payment_attempt,
+        //     payment_intent,
+        // )?;
 
-        let response = services::execute_connector_processing_step(
-            state,
-            connector_integration,
-            &router_data,
-            payments::CallConnectorAction::Trigger,
-            None,
-        )
-        .await
-        .change_context(errors::RecoveryError::RecordBackToBillingConnectorFailed)
-        .attach_printable("Failed while handling response of record back to billing connector")?;
+        // let response = services::execute_connector_processing_step(
+        //     state,
+        //     connector_integration,
+        //     &router_data,
+        //     payments::CallConnectorAction::Trigger,
+        //     None,
+        // )
+        // .await
+        // .change_context(errors::RecoveryError::RecordBackToBillingConnectorFailed)
+        // .attach_printable("Failed while handling response of record back to billing connector")?;
 
-        let record_back_response = match response.response {
-            Ok(response) => Ok(response),
-            error @ Err(_) => {
-                router_env::logger::error!(?error);
-                Err(errors::RecoveryError::RecordBackToBillingConnectorFailed)
-                    .attach_printable("Failed while recording back to billing connector")
-            }
-        }?;
+        // let record_back_response = match response.response {
+        //     Ok(response) => Ok(response),
+        //     error @ Err(_) => {
+        //         router_env::logger::error!(?error);
+        //         Err(errors::RecoveryError::RecordBackToBillingConnectorFailed)
+        //             .attach_printable("Failed while recording back to billing connector")
+        //     }
+        // }?;
         Ok(())
     }
 

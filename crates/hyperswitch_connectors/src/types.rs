@@ -65,7 +65,7 @@ pub struct ResponseRouterData<Flow, R, Request, Response> {
     pub http_code: u16,
 }
 
-pub struct ResponseRouterDataV2<Flow, R, ResourceCommonData, Request, Response> {
+pub struct  ResponseRouterDataV2<Flow, R, ResourceCommonData, Request, Response> {
     pub response: R,
     pub data: RouterDataV2<Flow, ResourceCommonData, Request, Response>,
     pub http_code: u16,
