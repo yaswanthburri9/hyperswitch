@@ -843,7 +843,7 @@ impl
     ) -> CustomResult<String, errors::ConnectorError> {
         Ok(format!(
             "{}v1/charges/{}",
-            req.resource_common_data.base_url, req.request.billing_connector_psync_id
+            req.request.base_url, req.request.billing_connector_psync_id
         ))
     }
 

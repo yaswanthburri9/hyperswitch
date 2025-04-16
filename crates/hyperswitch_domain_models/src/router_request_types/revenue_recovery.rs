@@ -4,6 +4,7 @@ use common_enums::enums;
 pub struct BillingConnectorPaymentsSyncRequest {
     /// unique id for making billing connector psync call
     pub billing_connector_psync_id: String,
+    pub base_url: String
 }
 
 #[derive(Debug, Clone)]

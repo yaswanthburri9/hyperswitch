@@ -855,6 +855,8 @@ impl BillingConnectorPaymentsSyncFlowRouterData {
         .parse_value("ConnectorAuthType")
         .change_context(errors::RevenueRecoveryError::BillingConnectorPaymentsSyncFailed)?;
 
+        
+
         let router_data = types::RouterDataV2 {
             flow: PhantomData::<router_flow_types::BillingConnectorPaymentsSync>,
             tenant_id: state.tenant.tenant_id.clone(),
@@ -864,6 +866,7 @@ impl BillingConnectorPaymentsSyncFlowRouterData {
             connector_auth_type: auth_type,
             request: revenue_recovery_request::BillingConnectorPaymentsSyncRequest {
                 billing_connector_psync_id: billing_connector_psync_id.to_string(),
+                base_url: state.conf.connectors.stripebilling.base_url.to_string()
             },
             response: Err(types::ErrorResponse::default()),
         };
@@ -883,5 +886,13 @@ impl BillingConnectorPaymentsSyncFlowRouterData {
 
     fn inner(self) -> router_types::BillingConnectorPaymentsSyncRouterData {
         self.0
+    }
+}
+
+fn get_base_url_with_connector_name(connector_name: String, state: &SessionState)-> String {
+    match connector_name {
+        "stripebilling".to_string() => {
+
+        }
     }
 }
